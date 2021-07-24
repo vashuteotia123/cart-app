@@ -2,36 +2,36 @@ import React from "react";
 import CartItem from "./CartItem";
 import Cart from "./Cart";
 import Navbar from "./Navbar";
+import firebase from "firebase";
 
 class App extends React.Component {
   constructor() {
     super();
     this.state = {
-      products: [
-        {
-          price: 9000,
-          title: "Mobile Phone",
-          qty: 10,
-          img: "",
-          id: 1,
-        },
-        {
-          price: 90,
-          title: "Laptop",
-          qty: 5,
-          img: "",
-          id: 2,
-        },
-        {
-          price: 18,
-          title: "U know",
-          qty: 15,
-          img: "",
-          id: 3,
-        },
-      ],
+      products: [],
+      loading: true,
     };
     // this.testing();
+  }
+  componentDidMount() {
+    firebase
+      .firestore()
+      .collection("products")
+      .get()
+      .then((snapshot) => {
+        {
+          console.log(snapshot);
+        }
+        snapshot.docs.map((doc) => {
+          console.log(doc.data());
+        });
+        const products = snapshot.docs.map((doc) => {
+          const data = doc.data();
+          data["id"] = doc.id;
+          return data;
+        });
+        this.setState({ products, loading: false });
+      });
   }
   handleIncreaseQuantity = (product) => {
     // console.log("Heyy please inc the qty of", product);
@@ -74,7 +74,7 @@ class App extends React.Component {
     return totalPrice;
   };
   render() {
-    const { products } = this.state;
+    const { products, loading } = this.state;
     return (
       <div className="App">
         <Navbar count={this.getCartCount()} />
@@ -84,6 +84,7 @@ class App extends React.Component {
           onDecreaseQuantity={this.handleDecreaseQuantity}
           onDeleteProduct={this.handleDeleteProduct}
         />
+        {loading && <h1>Loading Products..</h1>}
         <div style={styles.total_price}>Total: Rs. {this.getTotalPrice()}</div>
       </div>
     );
