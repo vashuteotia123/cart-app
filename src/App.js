@@ -84,10 +84,17 @@ class App extends React.Component {
           onDecreaseQuantity={this.handleDecreaseQuantity}
           onDeleteProduct={this.handleDeleteProduct}
         />
-        <h1>{this.getTotalPrice()}</h1>
+        <div style={styles.total_price}>Total: Rs. {this.getTotalPrice()}</div>
       </div>
     );
   }
 }
+
+const styles = {
+  total_price: {
+    fontSize: 20,
+    marginLeft: 40,
+  },
+};
 
 export default App;
